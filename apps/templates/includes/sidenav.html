@@ -1,0 +1,93 @@
+<nav
+  class="sidenav navbar navbar-vertical fixed-left navbar-expand-xs navbar-light bg-white"
+  id="sidenav-main"
+>
+  <div class="scrollbar-inner">
+    <!-- Brand -->
+    <div class="sidenav-header align-items-center">
+      <a class="navbar-brand" href="/">
+        Onlayn Kutubxona
+      </a>
+    </div>
+    <div class="navbar-inner">
+      <!-- Collapse -->
+      <div class="collapse navbar-collapse" id="sidenav-collapse-main">
+        <!-- Nav items -->
+        <ul class="navbar-nav">
+          <li class="nav-item">
+            <a
+              class="nav-link {% if 'index' in segment %} active {% endif %}"
+              href="/"
+            >
+              <i class="ni ni-tv-2 text-primary"></i>
+              <span class="nav-link-text">Dashboard</span>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a
+              class="nav-link {% if 'tables4' in segment %} active {% endif %}"
+              href="{% url 'tables4' %}"
+            >
+              <i class="ni ni-archive-2 text-orange"></i>
+              <span class="nav-link-text">Javonlar</span>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a
+              class="nav-link {% if 'tables3' in segment %} active {% endif %}"
+              href="{% url 'tables3' %}"
+            >
+              <i class="ni ni-paper-diploma text-success"></i>
+              <span class="nav-link-text">Janrlar</span>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a
+              class="nav-link {% if 'tables' in segment %} active {% endif %}"
+              href="{% url 'tables' %}"
+            >
+              <i class="ni ni-books text-info"></i>
+              <span class="nav-link-text">Kitoblar</span>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a
+              class="nav-link {% if 'tables' in segment %} active {% endif %}"
+              href="{% url 'tables2' %}"
+            >
+              <i class="ni ni-book-bookmark text-gray"></i>
+              <span class="nav-link-text">Tarqatilgan kitoblar</span>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a
+              class="nav-link {% if 'profile' in segment %} active {% endif %}"
+              href="/profile.html"
+            >
+              <i class="ni ni-single-02 text-yellow"></i>
+              <span class="nav-link-text">Profil</span>
+            </a>
+          </li>
+
+          {% comment %}
+          <li class="nav-item">
+            <a class="nav-link" href="/register.html">
+              <i class="ni ni-circle-08 text-pink"></i>
+              <span class="nav-link-text">Register (template)</span>
+            </a>
+          </li>
+          {% endcomment %}
+
+          <li class="nav-item">
+            <a class="nav-link" href="{% url 'logout' %}">
+              <i class="ni ni-user-run text-red"></i>
+              <span class="nav-link-text">Chiqish</span>
+            </a>
+          </li>
+        </ul>
+        <!-- Divider -->
+        <hr class="my-3" />
+      </div>
+    </div>
+  </div>
+</nav>

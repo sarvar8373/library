@@ -1,0 +1,334 @@
+{% extends 'layouts/base.html' %}
+{% load static %}
+{% block title %} Kitoblar {% endblock title %}
+
+{% block content %}
+
+  <div class="header bg-primary pb-6">
+    <div class="container-fluid">
+      <div class="header-body">
+        <div class="row align-items-center py-4">
+          <div class="col-lg-6 col-7">
+            <h6 class="h2 text-white d-inline-block mb-0">Kitoblar</h6>
+            <nav aria-label="breadcrumb" class="d-none d-md-inline-block ml-md-4">
+              <ol class="breadcrumb breadcrumb-links breadcrumb-dark">
+                <li class="breadcrumb-item"><a href="#"><i class="fas fa-home"></i></a></li>
+                <li class="breadcrumb-item active" aria-current="page"><a href="#">Kitoblar</a></li>
+              </ol>
+            </nav>
+          </div>
+          <div class="col-lg-6 col-5 text-right">
+            <a href="#" class="btn btn-sm btn-neutral" 
+            data-bs-toggle="modal"
+            data-bs-target="#exampleModal">Qo'shish</a>
+            <a href="#" class="btn btn-sm btn-neutral">Filter</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Page content -->
+  <div class="container-fluid mt--6">
+    <div class="row">
+      <div class="col">
+        <div class="card">
+        <div
+          class="modal fade"
+          id="exampleModal"
+          tabindex="-1"
+          aria-labelledby="exampleModalLabel"
+          aria-hidden="true">
+    
+          <div class="modal-dialog">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h1 class="modal-title fs-5" id="exampleModalLabel">
+                  Kitob qo'shish bo'limi
+                </h1>
+                
+              </div>
+              <div class="modal-body">
+                <form method="POST" enctype="multipart/form-data">
+                  {% csrf_token %} {{ form.as_p }}
+                  <div class="modal-footer">
+                    <button type="submit" name="add-book" class="btn btn-primary">Saqlash</button>
+                    <button
+                      type="button"
+                      class="btn btn-secondary"
+                      data-bs-dismiss="modal"
+                    >
+                      Chiqish
+                    </button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+        {% for book in books %}
+            <div
+            class="modal fade"
+            id="editbookModal-{{ book.id }}" 
+            tabindex="-1"
+            aria-labelledby="editbookModalLabel-{{ book.id }}"
+            aria-hidden="true">
+
+            <div class="modal-dialog">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h1 class="modal-title fs-5" id="editbookModalLabel-{{ book.id }}">
+                    Tahrirlash Bo'limi
+                  </h1>
+                </div>
+                <div class="modal-body">
+                  <form method="POST" enctype="multipart/form-data"> <!-- Include enctype for image uploads -->
+                    {% csrf_token %}
+                    <input type="hidden" name="book_id" value="{{ book.id }}" />
+                    <div class="mb-3">
+                      <label for="shelf-{{ book.id }}" class="form-label">{{ form.shelf.label }}</label>
+                      <select name="shelf" id="shelf-{{ book.id }}" class="form-control">
+                          {% for shelf in form.fields.shelf.queryset %}
+                          <option value="{{ shelf.id }}" {% if shelf.id == book.shelf.id %}selected{% endif %}>
+                              {{ shelf.shelf_number }}, {{ shelf.shelf_row }}, {{ shelf.genre.name }}
+                          </option>
+                          {% endfor %}
+                      </select>
+                      
+                  </div>
+                    <div class="mb-3">
+                        <label for="bookName-{{ book.id }}" class="form-label">Kitob Nomi</label>
+                        <input
+                            type="text"
+                            class="form-control"
+                            id="bookName-{{ book.id }}"
+                            name="name" 
+                            value="{{ book.name }}"
+                            required
+                        />
+                    </div>
+                    <div class="mb-3">
+                        <label for="bookDescription-{{ book.id }}" class="form-label">Kitob matni</label>
+                        <textarea
+                            class="form-control"
+                            id="bookDescription-{{ book.id }}"
+                            name="description" 
+                            rows="4"
+                            required
+                        >{{ book.description }}</textarea>
+                    </div>
+                    <div class="mb-3">
+                      <label for="bookName-{{ book.id }}" class="form-label">Kitob Soni</label>
+                      <input
+                          type="number"
+                          class="form-control"
+                          id="bookName-{{ book.id }}"
+                          name="name" 
+                          value="{{ book.count }}"
+                          required
+                      />
+                  </div>
+                    <div class="mb-3">
+                        <label for="bookImage-{{ book.id }}" class="form-label">Rasmni Yangilash</label>
+                        <input
+                            type="file"
+                            class="form-control"
+                            id="bookImage-{{ book.id }}"
+                            name="image"
+                            accept="image/*"
+                        />
+                    </div>
+                    <div class="modal-footer">
+                        <button type="submit" name="edit-book" class="btn btn-primary">
+                            Saqlash
+                        </button>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                            Chiqish
+                        </button>
+                    </div>
+                </form>
+                </div>
+              </div>
+            </div>
+          </div>
+          {% endfor %}
+          <!-- Card header -->
+          <div class="card-header border-0">
+            <h3 class="mb-0">Kitoblar ro'yxati</h3>
+          </div>
+          
+          <!-- Light table -->
+          <div class="table-responsive">
+            <table class="table align-items-center table-flush">
+              <thead class="thead-light">
+                <tr>
+                  <th scope="col" class="sort" data-sort="name">Nomi</th>
+                  <th scope="col" class="sort" data-sort="budget">Matni</th>
+                  <th scope="col" class="sort" data-sort="status">Rasmi</th>
+                  <th scope="col" class="sort" data-sort="status">Javon qator va raqami</th>
+                  <th scope="col" class="sort" data-sort="status">Janri</th>
+                  <th scope="col" class="sort" data-sort="status">Soni</th>
+                  <th scope="col" class="sort" data-sort="completion">Sanasi</th>
+                  <th scope="col"></th>
+                </tr>
+              </thead>
+              <tbody class="list">
+                {% for book in books %}
+                <tr>
+                  <th scope="row">
+                    <div class="media align-items-center">
+                      <div class="media-body">
+                        <span class="name mb-0 text-sm">{{ book.name }}</span>
+                      </div>
+                    </div>
+                  </th>
+                  <td class="budget">
+                    {{ book.description }}
+                  </td>
+                  <td>
+                    <span class="badge badge-dot mr-4">
+                      <span class="status"><img src="{{ book.image }}" alt="{{ book.name }}" width="150px" height="auto"></span>
+                    </span>
+                  </td>
+                  <td class="budget">
+                    {{ book.shelf.shelf_number }}, {{ book.shelf.shelf_row }}
+                  </td>
+                  <td class="budget">
+                    {{ book.shelf.genre.name }}
+                  </td>
+                  <td class="budget">
+                    {{ book.available_count }} 
+                  </td>
+                  <td>
+                    <div class="avatar-group">
+                      <span class="status">{{ book.created_at }}</span>
+                    </div>
+                  </td>
+                  <td style="width: 200px" class="border border-light-300 px-4 py-2">
+                    <button
+                    type="button"
+                    class="btn btn-warning"
+                    data-bs-toggle="modal"
+                    data-bs-target="#editbookModal-{{ book.id }}" 
+                    >
+                    <i class="ni ni-curved-next"></i>
+                    </button>
+                    
+                    <button
+                      type="button"
+                      class="btn btn-danger"
+                      onclick="deleteBook('{{ book.id }}')"
+                    >
+                    <i class="ni ni-box-2"></i>
+                    </button>
+                  </td>
+                </tr>{% endfor %}
+              </tbody>
+            </table>
+          </div>
+          <!-- Card footer -->
+          <div class="card-footer py-4">
+            <nav aria-label="Page navigation">
+              <ul class="pagination justify-content-end mb-0">
+                  {% if page_obj.has_previous %}
+                  <li class="page-item">
+                      <a class="page-link" href="?page=1" tabindex="-1">
+                          <i class="fas fa-angle-double-left"></i>
+                          <span class="sr-only">First</span>
+                      </a>
+                  </li>
+                  <li class="page-item">
+                      <a class="page-link" href="?page={{ page_obj.previous_page_number }}">
+                          <i class="fas fa-angle-left"></i>
+                          <span class="sr-only">Previous</span>
+                      </a>
+                  </li>
+                  {% else %}
+                  <li class="page-item disabled">
+                      <a class="page-link" href="#" tabindex="-1">
+                          <i class="fas fa-angle-double-left"></i>
+                          <span class="sr-only">First</span>
+                      </a>
+                  </li>
+                  <li class="page-item disabled">
+                      <a class="page-link" href="#" tabindex="-1">
+                          <i class="fas fa-angle-left"></i>
+                          <span class="sr-only">Previous</span>
+                      </a>
+                  </li>
+                  {% endif %}
+          
+                  <!-- Page Numbers -->
+                  {% for num in page_obj.paginator.page_range %}
+                  {% if page_obj.number == num %}
+                  <li class="page-item active">
+                      <span class="page-link">
+                          {{ num }}
+                      </span>
+                  </li>
+                  {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                  <li class="page-item">
+                      <a class="page-link" href="?page={{ num }}">{{ num }}</a>
+                  </li>
+                  {% endif %}
+                  {% endfor %}
+          
+                  <!-- Next Page -->
+                  {% if page_obj.has_next %}
+                  <li class="page-item">
+                      <a class="page-link" href="?page={{ page_obj.next_page_number }}">
+                          <i class="fas fa-angle-right"></i>
+                          <span class="sr-only">Next</span>
+                      </a>
+                  </li>
+                  <li class="page-item">
+                      <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}">
+                          <i class="fas fa-angle-double-right"></i>
+                          <span class="sr-only">Last</span>
+                      </a>
+                  </li>
+                  {% else %}
+                  <li class="page-item disabled">
+                      <a class="page-link" href="#" tabindex="-1">
+                          <i class="fas fa-angle-right"></i>
+                          <span class="sr-only">Next</span>
+                      </a>
+                  </li>
+                  <li class="page-item disabled">
+                      <a class="page-link" href="#" tabindex="-1">
+                          <i class="fas fa-angle-double-right"></i>
+                          <span class="sr-only">Last</span>
+                      </a>
+                  </li>
+                  {% endif %}
+              </ul>
+          </nav>
+          </div>
+        </div>
+      </div>
+    </div>
+    <form id="delete-form" method="post" style="display: none">
+      {% csrf_token %}
+      <input type="hidden" name="delete-book" value="1" />
+      <input type="hidden" name="book_id" id="delete-book-id" />
+    </form>
+    {% include "includes/footer.html" %}
+
+  </div>
+
+{% endblock content %}
+
+<!-- Specific JS goes HERE --> 
+{% block javascripts %}<script>
+  function deleteBook(categoryId) {
+    if (confirm("Are you sure you want to delete this book?")) {
+      const deleteForm = document.getElementById("delete-form");
+      const categoryInput = document.getElementById("delete-book-id");
+
+      categoryInput.value = categoryId;
+
+      // Submit the form
+      deleteForm.submit();
+    }
+  }
+</script>{% endblock javascripts %}

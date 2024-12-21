@@ -1,0 +1,274 @@
+{% extends 'layouts/base.html' %}
+{% load static %}
+{% block title %} Janrlar {% endblock title %}
+
+{% block content %}
+
+  <div class="header bg-primary pb-6">
+    <div class="container-fluid">
+      <div class="header-body">
+        <div class="row align-items-center py-4">
+          <div class="col-lg-6 col-7">
+            <h6 class="h2 text-white d-inline-block mb-0">Janrlar</h6>
+            <nav aria-label="breadcrumb" class="d-none d-md-inline-block ml-md-4">
+              <ol class="breadcrumb breadcrumb-links breadcrumb-dark">
+                <li class="breadcrumb-item"><a href="#"><i class="fas fa-home"></i></a></li>
+                <li class="breadcrumb-item active" aria-current="page"><a href="#">Janrlar</a></li>
+              </ol>
+            </nav>
+          </div>
+          <div class="col-lg-6 col-5 text-right">
+            <a href="#" class="btn btn-sm btn-neutral" 
+            data-bs-toggle="modal"
+            data-bs-target="#exampleModal">Qo'shish</a>
+            <a href="#" class="btn btn-sm btn-neutral">Filter</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+ 
+  <!-- Page content -->
+  <div class="container-fluid mt--6">
+    <div class="row">
+      <div class="col">
+        <div class="card">
+        <div
+          class="modal fade"
+          id="exampleModal"
+          tabindex="-1"
+          aria-labelledby="exampleModalLabel"
+          aria-hidden="true">
+    
+          <div class="modal-dialog">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h1 class="modal-title fs-5" id="exampleModalLabel">
+                  Janr bo'limi
+                </h1>
+                
+              </div>
+              <div class="modal-body">
+                <form method="POST">
+                    {% csrf_token %}
+                    <div class="row">
+                        <div class="col-md-12">
+                            Janr nomi
+                            {{ form.name }}
+                        </div>
+                        <div class="modal-footer">
+                            <button type="submit" name="add-genre" class="btn btn-primary">Saqlash</button>
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                                Chiqish
+                            </button>
+                        </div>
+                    </div>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+        {% for genre in genres %}
+            <div
+            class="modal fade"
+            id="editbookModal-{{ genre.id }}" 
+            tabindex="-1"
+            aria-labelledby="editbookModalLabel-{{ genre.id }}"
+            aria-hidden="true">
+
+            <div class="modal-dialog">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h1 class="modal-title fs-5" id="editbookModalLabel-{{ genre.id }}">
+                    Tahrirlash Bo'limi
+                  </h1>
+                </div>
+                <div class="modal-body p-0">
+                    <form method="POST">
+                        {% csrf_token %}
+                        <input type="hidden" name="genre_id" value="{{ genre.id }}">
+                        <div class="modal-body p-2">
+                            <div class="col-md-12">
+                              <label for="genre-name-{{ genre.id }}" class="form-label">Janr nomi</label>
+                              <input
+                                  type="text"
+                                  name="name"
+                                  id="genre-name-{{ genre.id }}"
+                                  value="{{ genre.name }}"
+                                  class="form-control"
+                              />
+                          </div>
+                            
+                        </div>
+                        <div class="modal-footer">
+                            <button type="submit" name="edit-genre" class="btn btn-primary">
+                                Saqlash
+                            </button>
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                                Chiqish
+                            </button>
+                        </div>
+                    </form>
+                    
+                </div>
+              </div>
+            </div>
+          </div>
+          {% endfor %}
+          <!-- Card header -->
+          <div class="card-header border-0">
+            <h3 class="mb-0">Janrlar ro'yxati</h3>
+          </div>
+          
+          <!-- Light table -->
+          <div class="table-responsive">
+            <table class="table align-items-center table-flush">
+              <thead class="thead-light">
+                <tr>
+                  <th scope="col" class="sort" data-sort="name">ID</th>
+                  <th scope="col" class="sort" data-sort="name">Janr nomi</th>
+                  <th scope="col"></th>
+                </tr>
+              </thead>
+              <tbody class="list">
+                {% for genre in genres %}
+                <tr>
+                  <th scope="row">
+                    <div class="media align-items-center">
+                      <div class="media-body">
+                        <span class="name mb-0 text-sm">{{ genre.id }}</span>
+                      </div>
+                    </div>
+                  </th>
+                  <td class="budget">
+                    {{ genre.name }}
+                  </td>
+                  <td style="width: 200px" class="border border-light-300 px-4 py-2">
+                    <button
+                    type="button"
+                    class="btn btn-warning"
+                    data-bs-toggle="modal"
+                    data-bs-target="#editbookModal-{{ genre.id }}" 
+                    >
+                    <i class="ni ni-curved-next"></i>
+                    </button>
+                    
+                    <button
+                      type="button"
+                      class="btn btn-danger"
+                      onclick="deleteBook('{{ genre.id }}')"
+                    >
+                    <i class="ni ni-box-2"></i>
+                    </button>
+                  </td>
+                </tr>{% endfor %}
+              </tbody>
+            </table>
+          </div>
+          <!-- Card footer -->
+          <div class="card-footer py-4">
+            <nav aria-label="Page navigation">
+              <ul class="pagination justify-content-end mb-0">
+                  <!-- Previous Page -->
+                  {% if page_obj.has_previous %}
+                  <li class="page-item">
+                      <a class="page-link" href="?page=1" tabindex="-1">
+                          <i class="fas fa-angle-double-left"></i>
+                          <span class="sr-only">First</span>
+                      </a>
+                  </li>
+                  <li class="page-item">
+                      <a class="page-link" href="?page={{ page_obj.previous_page_number }}">
+                          <i class="fas fa-angle-left"></i>
+                          <span class="sr-only">Previous</span>
+                      </a>
+                  </li>
+                  {% else %}
+                  <li class="page-item disabled">
+                      <a class="page-link" href="#" tabindex="-1">
+                          <i class="fas fa-angle-double-left"></i>
+                          <span class="sr-only">First</span>
+                      </a>
+                  </li>
+                  <li class="page-item disabled">
+                      <a class="page-link" href="#" tabindex="-1">
+                          <i class="fas fa-angle-left"></i>
+                          <span class="sr-only">Previous</span>
+                      </a>
+                  </li>
+                  {% endif %}
+          
+                  <!-- Page Numbers -->
+                  {% for num in page_obj.paginator.page_range %}
+                  {% if page_obj.number == num %}
+                  <li class="page-item active">
+                      <span class="page-link">
+                          {{ num }}
+                      </span>
+                  </li>
+                  {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                  <li class="page-item">
+                      <a class="page-link" href="?page={{ num }}">{{ num }}</a>
+                  </li>
+                  {% endif %}
+                  {% endfor %}
+          
+                  <!-- Next Page -->
+                  {% if page_obj.has_next %}
+                  <li class="page-item">
+                      <a class="page-link" href="?page={{ page_obj.next_page_number }}">
+                          <i class="fas fa-angle-right"></i>
+                          <span class="sr-only">Next</span>
+                      </a>
+                  </li>
+                  <li class="page-item">
+                      <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}">
+                          <i class="fas fa-angle-double-right"></i>
+                          <span class="sr-only">Last</span>
+                      </a>
+                  </li>
+                  {% else %}
+                  <li class="page-item disabled">
+                      <a class="page-link" href="#" tabindex="-1">
+                          <i class="fas fa-angle-right"></i>
+                          <span class="sr-only">Next</span>
+                      </a>
+                  </li>
+                  <li class="page-item disabled">
+                      <a class="page-link" href="#" tabindex="-1">
+                          <i class="fas fa-angle-double-right"></i>
+                          <span class="sr-only">Last</span>
+                      </a>
+                  </li>
+                  {% endif %}
+              </ul>
+          </nav>
+          </div>
+        </div>
+      </div>
+    </div>
+    <form id="delete-form" method="post" style="display: none">
+      {% csrf_token %}
+      <input type="hidden" name="delete-genre" value="1" />
+      <input type="hidden" name="genre_id" id="delete-genre-id" />
+    </form>
+    {% include "includes/footer.html" %}
+
+  </div>
+
+{% endblock content %}
+
+<!-- Specific JS goes HERE --> 
+{% block javascripts %}<script>
+  function deleteBook(categoryId) {
+    if (confirm("Are you sure you want to delete this book?")) {
+      const deleteForm = document.getElementById("delete-form");
+      const categoryInput = document.getElementById("delete-genre-id");
+
+      categoryInput.value = categoryId;
+
+      // Submit the form
+      deleteForm.submit();
+    }
+  }
+</script>{% endblock javascripts %}
