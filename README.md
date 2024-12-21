@@ -1,13 +1,5 @@
 
 
-## Demo
-
-> To authenticate use the default credentials ***test / ApS12_ZZs8*** or create a new user on the **registration page**.
-
-- **Argon Dashboard Django** [Login Page](https://www.creative-tim.com/live/argon-dashboard-django)
-- **[Django Argon Charts](https://github.com/app-generator/django-argon-charts)** - sample projects that showcase real information in charts 
-
-<br />
 
 ## Quick start
 
@@ -15,7 +7,7 @@
 
 ```bash
 $ # Get the code
-$ git clone https://github.com/creativetimofficial/argon-dashboard-django.git
+$ git clone https://github.com/sarvar8373/library.git
 $ cd argon-dashboard-django
 $
 $ # Virtualenv modules installation (Unix based systems)
