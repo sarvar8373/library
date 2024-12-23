@@ -15,6 +15,7 @@ from django.contrib import messages
 from .models import Book, BookReservation, Genre, Shelf
 from .forms import BookForm, BookReservationForm, GenreForm, ShelfForm
 from datetime import datetime
+from django.db.models import Case, When, Value, IntegerField
 
 @login_required(login_url="/login/")
 def index(request):
@@ -99,8 +100,21 @@ def book_list(request):
 
 @login_required
 def reservation_list(request):
-    reservations = BookReservation.objects.all().order_by('id')
     current_time = datetime.now()
+
+    # Add priority annotation to reservations
+    reservations = BookReservation.objects.annotate(
+        priority=Case(
+            When(
+                reservation_date=current_time.date(),
+                reservation_time__lt=current_time.time(),
+                then=Value(1)  # High priority
+            ),
+            default=Value(2),  # Default priority
+            output_field=IntegerField()
+        )
+    ).order_by('priority', 'reservation_date', 'reservation_time', 'id')  # Sort by priority, date, time, and ID.
+
     form = BookReservationForm()
 
     if request.method == "POST":
@@ -112,7 +126,13 @@ def reservation_list(request):
                     return redirect('tables2') 
                 except ValidationError as e:
                     messages.error(request, e.message)  
-
+        elif 'set_check' in request.POST:
+            reservation_id = request.POST.get('reservation_id')
+            reservation = get_object_or_404(BookReservation, id=reservation_id)
+            reservation.check = True 
+            reservation.save()
+            messages.success(request, "Kitob topshirildi.")
+            return redirect('tables2')
         elif 'edit-reservation' in request.POST:
             reservation_id = request.POST.get("reservation_id")
             reservation = get_object_or_404(BookReservation, id=reservation_id)

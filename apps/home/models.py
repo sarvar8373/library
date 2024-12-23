@@ -30,11 +30,11 @@ class Book(models.Model):
     description = models.TextField()
     image = models.ImageField(upload_to='static/book_images/')
     count = models.CharField(max_length=255, null=True, blank=True)
-    created_at = models.DateTimeField(auto_now_add=True) 
+    created_at = models.DateTimeField(auto_now_add=True)
 
     @property
     def available_count(self):
-        total_reserved = self.reservations.aggregate(total=Sum('count'))['total'] or 0
+        total_reserved = sum(res.reservation_count for res in self.reservations.all())
         return int(self.count or 0) - total_reserved
 
     def __str__(self):
@@ -47,6 +47,16 @@ class BookReservation(models.Model):
     reservation_date = models.DateField()
     reservation_time = models.TimeField()
     created_at = models.DateTimeField(auto_now_add=True)
+    check = models.BooleanField(default=False)
+
+    @property
+    def reservation_count(self):
+        """
+        Returns 0 if the reservation is checked, otherwise returns the original count.
+        """
+        if self.check:
+            return 0
+        return int(self.count or 0)  # Ensure count is treated as an integer
 
     def __str__(self):
         return f"Reservation {self.book.name} on {self.reservation_date}"

@@ -65,7 +65,7 @@ class BookForm(forms.ModelForm):
 class BookReservationForm(forms.ModelForm):
     class Meta:
         model = BookReservation
-        fields = ['book', 'get_name', 'count', 'reservation_date', 'reservation_time']
+        fields = ['book', 'get_name', 'count', 'reservation_date', 'reservation_time', 'check']  # Add 'check' field
         widgets = {
             'reservation_date': forms.DateInput(attrs={'type': 'date', 'class': 'form-control'}),
             'reservation_time': forms.TimeInput(attrs={'type': 'time', 'class': 'form-control'}),
@@ -77,5 +77,8 @@ class BookReservationForm(forms.ModelForm):
             'count': forms.NumberInput(attrs={
                 'class': 'form-control', 
                 'placeholder': 'Olingan kitob soni',  # Placeholder for user guidance
+            }),
+            'check': forms.CheckboxInput(attrs={
+                'class': 'form-check-input',  # Bootstrap checkbox styling
             }),
         }

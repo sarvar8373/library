@@ -196,15 +196,19 @@
               </thead>
               <tbody class="list">
                 {% for reservation in reservations %}
-                <tr class="{% if reservation.reservation_date %}
-                      {% if reservation.reservation_date < current_time.date %}
-                          bg-danger
-                      {% elif reservation.reservation_date == current_time.date %}
-                          {% if reservation.reservation_time and reservation.reservation_time < current_time.time %}
-                              bg-danger
-                          {% endif %}
-                      {% endif %}
-                  {% endif %}">
+                <tr class="{% if reservation.check %}
+                    bg-success
+                {% else %}
+                    {% if reservation.reservation_date %}
+                        {% if reservation.reservation_date < current_time.date %}
+                            bg-danger
+                        {% elif reservation.reservation_date == current_time.date %}
+                            {% if reservation.reservation_time and reservation.reservation_time < current_time.time %}
+                                bg-danger
+                            {% endif %}
+                        {% endif %}
+                    {% endif %}
+                {% endif %}">
                   <th scope="row">
                     <div class="media align-items-center">
                       <div class="media-body">
@@ -231,7 +235,25 @@
                       <span class="status">{{ reservation.created_at }}</span>
                     </div>
                   </td>
-                  <td style="width: 200px" class="border border-light-300 px-4 py-2">
+                  <td style="display:flex; width: 200px" class="px-4 py-2">
+                    <form method="POST">
+                      {% csrf_token %}
+                      <input type="hidden" name="reservation_id" value="{{ reservation.id }}">
+                      <input type="hidden" name="set_check" value="True">
+                      {% if not reservation.check %}
+                        {% if reservation.reservation_date == current_time.date %}
+                            {% if reservation.reservation_time and reservation.reservation_time >= current_time.time %}
+                                <button type="submit" class="btn btn-primary" style="margin-right: 8px !important">
+                                    <i class="ni ni-check-bold"></i>
+                                </button>
+                            {% endif %}
+                        {% elif reservation.reservation_date != current_time.date or not reservation.reservation_time %}
+                            <button type="submit" class="btn btn-primary" style="margin-right: 8px !important">
+                                <i class="ni ni-check-bold"></i>
+                            </button>
+                        {% endif %}
+                    {% endif %}
+                    </form>
                     <button
                     type="button"
                     class="btn btn-warning"
